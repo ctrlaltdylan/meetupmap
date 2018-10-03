@@ -29,4 +29,51 @@
   to {
     transform: rotate(360deg);
   }
+
+}
+
+a:link {
+    text-decoration: none;
+    color: black;
+}
+
+
+.container {
+  display: grid;
+  grid-template-columns: 30% 60%; 
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+}
+
+.events-container {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: 100%;
+  position: absolute;
+  direction: rtl;
+}
+
+.heading {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 1em 1em 1em 1em;
+}
+
+.event {
+  margin-top: 1em;
+  padding: 1em 1em 1em 1em;
+
+  text-decoration: none;
+
+  border-top: 1px solid black;
+  direction:ltr;
+}
+
+.event-group {
+  font-style: italic;
+
 }
