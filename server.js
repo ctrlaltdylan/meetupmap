@@ -11,6 +11,7 @@ app.use(cors());
 app.use(express.static('build'));
 
 app.get('/', (req, res) => {
+  res.send('hello');
   res.sendFile(path.join(__dirname, 'build/index.html'))
 });
 
@@ -20,7 +21,7 @@ app.get('/meetups', (req, res) => {
   var options = {
     url,
     headers: {
-      'Origin': 'http://localhost:8080'
+      'Origin': 'https://meetupmap.herokuapp.com/'
     }
   };
 
