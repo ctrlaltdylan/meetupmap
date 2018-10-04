@@ -59,6 +59,8 @@ class App extends Component {
         options.url = process.env.REACT_APP_MEETUPS_URL
       }
 
+      debugger;
+
       if(state && state.lat && state.lng) {
         options.url = options.url + '?' + qs.stringify({lat: state.lat, lon: state.lng});
       }
