@@ -138,7 +138,7 @@ class App extends Component {
             : ''}
           </section>
         </aside>
-        <section>
+        <section class="map-wrapper">
           <MapContainer
             style={style}
             events={this.state.events}

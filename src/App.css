@@ -52,7 +52,7 @@ a:link {
   flex-direction: column;
   overflow-y: scroll;
   height: 100%;
-  position: absolute;
+  position: relative;
   direction: rtl;
 }
 
