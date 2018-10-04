@@ -4,8 +4,9 @@ import './App.css';
 import MapContainer from './MapContainer';
 import request from 'request';
 import qs from 'querystring';
-
 import LocationSearchInput from './LocationSearchInput';
+require('dotenv').config()
+
 
 const style = {
   width: '100%',
@@ -50,8 +51,20 @@ class App extends Component {
   }
 
   retrieveMeetups = (state) => {
+<<<<<<< HEAD
       const options = {
         url: '/meetups',
+=======
+      let options = {};
+      if(process.env.APP_ENV == 'production') { 
+        options = {
+          url: '/meetups',
+        }
+      } else {
+        options = {
+          url: 'http://localhost:8080/meetups',
+        }
+>>>>>>> c862d165bf1fdfa12a2c930e5ae511c2bebad84a
       }
 
       if(state && state.lat && state.lng) {
@@ -126,7 +139,7 @@ class App extends Component {
             </button>
           </section>
           */}
-          <section class="events-container">
+          <section className="events-container">
             { (this.state.events.length > 0) ? 
                 (this.state.selectedEvent) ? 
                   <Event {...this.state.selectedEvent} />
