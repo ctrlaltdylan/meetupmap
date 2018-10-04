@@ -6,18 +6,19 @@ const cors = require('cors');
 const qs = require('querystring');
 const path = require('path');
 app.use(cors());
+require('dotenv').config()
 
 // to serve production assets statically
 app.use(express.static('build'));
 
 app.get('/', (req, res) => {
-  res.send('hello');
-  res.sendFile(path.join(__dirname, 'build/index.html'))
+  const assets_path = (process.env.APP_ENV == 'production' ? path.join(__dirname, 'build/index.html') : path.join(__dirname, 'public/index.html'));
+  res.sendFile(assets_path);
 });
 
 app.get('/meetups', (req, res) => {
   console.log('query string:', qs.stringify(req.query));
-  const url = 'https://api.meetup.com/find/upcoming_events?photo-host=public&page=100&order=time&topic_category=292' + qs.stringify(req.query) + '&key=2f7d4b367b683d2a582515082a463d&sign=true';
+  const url = 'https://api.meetup.com/find/upcoming_events?photo-host=public&page=100&order=time&topic_category=292' + qs.stringify(req.query) + `&key=${process.env.MEETUP_API_KEY}&sign=true`;
   var options = {
     url,
     headers: {
@@ -35,4 +36,4 @@ app.get('/meetups', (req, res) => {
   });
 })
 
-app.listen(port, () => { console.log('App started on ', port)})
+app.listen(port, () => { console.log(`App in ${process.env.APP_ENV} mode started on `, port)})
