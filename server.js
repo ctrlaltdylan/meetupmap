@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 8080;
-const ip = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
+const port = 8080 || process.env.PORT;
 const request = require('request');
 const cors = require('cors');
 const qs = require('querystring');
