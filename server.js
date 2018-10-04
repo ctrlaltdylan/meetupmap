@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 8080 || process.env.PORT;
+const port = process.env.PORT || 8080;
 const request = require('request');
 const cors = require('cors');
 const qs = require('querystring');
