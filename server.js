@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-const port = 8000;
+const port = 8080;
+const ip = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 const request = require('request');
 const cors = require('cors');
 const qs = require('querystring');
@@ -20,7 +21,7 @@ app.get('/meetups', (req, res) => {
   var options = {
     url,
     headers: {
-      'Origin': 'http://localhost:3000'
+      'Origin': 'http://localhost:8080'
     }
   };
 
@@ -34,4 +35,4 @@ app.get('/meetups', (req, res) => {
   });
 })
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, ip)
