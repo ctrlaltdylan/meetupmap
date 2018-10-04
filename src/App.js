@@ -52,14 +52,8 @@ class App extends Component {
 
   retrieveMeetups = (state) => {
       let options = {
-        url: 'http://localhost:8080/meetups' 
+        url: process.env.REACT_APP_MEETUPS_URL || 'http://localhost:8080/meetups' 
       };
-
-      if (process.env.REACT_APP_MEETUPS_URL) {
-        options.url = process.env.REACT_APP_MEETUPS_URL
-      }
-
-      debugger;
 
       if(state && state.lat && state.lng) {
         options.url = options.url + '?' + qs.stringify({lat: state.lat, lon: state.lng});
