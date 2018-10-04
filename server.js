@@ -6,7 +6,9 @@ const cors = require('cors');
 const qs = require('querystring');
 const path = require('path');
 app.use(cors());
-require('dotenv').config()
+if (!process.env.APP_ENV) {
+  require('dotenv').config()
+}
 
 // to serve production assets statically
 app.use(express.static('build'));
