@@ -34,4 +34,4 @@ app.get('/meetups', (req, res) => {
   });
 })
 
-app.listen(port, ip)
+app.listen(port, () => { console.log('App started on ', port)})
