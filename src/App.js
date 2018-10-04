@@ -5,7 +5,6 @@ import MapContainer from './MapContainer';
 import request from 'request';
 import qs from 'querystring';
 import LocationSearchInput from './LocationSearchInput';
-require('dotenv').config()
 
 
 const style = {
@@ -48,24 +47,19 @@ class App extends Component {
       events: [],
       selectedEvent: false
     }
+
   }
 
   retrieveMeetups = (state) => {
-<<<<<<< HEAD
-      const options = {
-        url: '/meetups',
-=======
-      let options = {};
-      if(process.env.APP_ENV == 'production') { 
-        options = {
-          url: '/meetups',
-        }
-      } else {
-        options = {
-          url: 'http://localhost:8080/meetups',
-        }
->>>>>>> c862d165bf1fdfa12a2c930e5ae511c2bebad84a
+      let options = {
+        url:'http://localhost:8080/meetups' 
+      };
+
+      if (process) {
+        options.url = process.env.REACT_APP_MEETUPS_URL
       }
+
+      debugger;
 
       if(state && state.lat && state.lng) {
         options.url = options.url + '?' + qs.stringify({lat: state.lat, lon: state.lng});
@@ -100,7 +94,7 @@ class App extends Component {
     const selectedEvent = this.state.events.filter(event => {
       return event.id == event_id;
     })[0];
-    debugger;
+
     this.setState({
       selectedEvent
     });
@@ -142,10 +136,10 @@ class App extends Component {
           <section className="events-container">
             { (this.state.events.length > 0) ? 
                 (this.state.selectedEvent) ? 
-                  <Event {...this.state.selectedEvent} />
+                  <Event key={this.state.selectedEvent.id} {...this.state.selectedEvent} />
                 : this.state.events.map(function(event) {
                   return (
-                    <Event {...event} />
+                    <Event key={event.id} {...event} />
                   );
                 })
             : ''}
