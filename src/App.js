@@ -14,13 +14,14 @@ const style = {
 
 const Event = (props) => {
     return (
-      <a key = { props.id } href = { props.link } target = "_self" >
         <div className="event">
-          <h3 className="event-title">
-            {props.name}
-          </h3>
+          <a key = { props.id } href = { props.link } target="_blank">
+            <h3 className="event-title">
+              {props.name}
+            </h3>
+          </a>
           <p className="event-group">
-            hosted by {props.group.name}
+            hosted by <a href={'https://www.meetup.com/' + props.group.urlname} target="_blank">{props.group.name}</a>
           </p>
           <p>
             <span>
@@ -29,11 +30,20 @@ const Event = (props) => {
           </p>
           {(props.venue) ?
             <p>
-              hosted at {props.venue.name}
+              hosted at <a href={`https://www.google.com/maps/search/?api=1&query=${props.venue.name}` } target="_blank">{props.venue.name}</a>
             </p>
             : ''}
+          {(props.venue) ?
+            <p>
+              <a className="" href={`https://www.google.com/maps/search/?api=1&query=${props.venue.name}` } target="_blank">
+                <button>
+                  GET DIRECTIONS
+                </button>
+              </a>
+            </p>
+            : ''}
+
         </div>
-      </a >
     )
 }
 
