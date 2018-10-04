@@ -51,7 +51,7 @@ class App extends Component {
 
   retrieveMeetups = (state) => {
       const options = {
-        url: 'https://meetupmap.herokuapp.com/meetups',
+        url: '/meetups',
       }
 
       if(state && state.lat && state.lng) {
