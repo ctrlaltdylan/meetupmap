@@ -1,97 +1,85 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import MapContainer from './MapContainer';
 import request from 'request';
 import qs from 'querystring';
 import LocationSearchInput from './LocationSearchInput';
-
+import Event from './Event';
+import moment from 'moment';
 
 const style = {
   width: '100%',
   height: '100%'
-}
-
-const Event = (props) => {
-    return (
-        <div className="event">
-          <a key = { props.id } href = { props.link } target="_blank">
-            <h3 className="event-title">
-              {props.name}
-            </h3>
-          </a>
-          <p className="event-group">
-            hosted by <a href={'https://www.meetup.com/' + props.group.urlname} target="_blank">{props.group.name}</a>
-          </p>
-          <p>
-            <span>
-              {props.local_date} at {props.local_time}
-            </span>
-          </p>
-          {(props.venue) ?
-            <p>
-              hosted at <a href={`https://www.google.com/maps/search/?api=1&query=${props.venue.name}` } target="_blank">{props.venue.name}</a>
-            </p>
-            : ''}
-          {(props.venue) ?
-            <p>
-              <a className="" href={`https://www.google.com/maps/search/?api=1&query=${props.venue.name}` } target="_blank">
-                <button>
-                  GET DIRECTIONS
-                </button>
-              </a>
-            </p>
-            : ''}
-
-        </div>
-    )
-}
+};
 
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      loading: true,
+      loadingEvents: true,
       city: {},
       events: [],
-      selectedEvent: false
+      selectedEvent: false,
+      dateRange: 'month'
     }
 
   }
 
   retrieveMeetups = (state) => {
-      let options = {
-        url: process.env.REACT_APP_MEETUPS_URL || 'http://localhost:8080/meetups' 
-      };
+    let options = {
+      url: process.env.REACT_APP_MEETUPS_URL || 'http://localhost:8080/meetups' 
+    };
+    let query = {};
 
-      if(state && state.lat && state.lng) {
-        options.url = options.url + '?' + qs.stringify({lat: state.lat, lon: state.lng});
+    if(state && state.lat && state.lng) {
+      query.lat = state.lat;
+      query.lon = state.lng;
+    }
+    
+    if(state && state.dateRange) {
+      if (state.dateRange == 'today') {
+        query.end_date_range = moment().endOf('day').format('YYYY-MM-DDTHH:mm:00')
+      } else if (state.dateRange == 'week') {
+        query.end_date_range = moment().add(7, 'days').format('YYYY-MM-DDTHH:mm:00')
+      } else {
+        // just leave the filter blank
       }
+    }
 
-      request(options, function(error, response, body) {
-          console.log('error:', error); // Print the error if one occurred
-          console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-          console.log('body:', body); // Print the HTML for the Google homepage.
+    options.url = options.url + '?' + qs.stringify(query);
 
-          body = JSON.parse(body);
-          this.setState({
-            events: body.events,
-            city: body.city,
-            loading: false,
-            address: '' 
-          })
-      }.bind(this));
+    request(options, function(error, response, body) {
+        console.log('error:', error); // Print the error if one occurred
+        console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+        console.log('body:', body); // Print the HTML for the Google homepage.
+
+        body = JSON.parse(body);
+        this.setState({
+          events: body.events,
+          city: body.city,
+          loadingEvents: false,
+          address: '' 
+        })
+    }.bind(this));
   }
 
   onLocationSelect = (latLng) => {
     const {lat, lng} = latLng;
     this.setState({
       lat,
-      lng
+      lng,
+      loadingEvents: true
     }, () => {
       this.retrieveMeetups(this.state);
     })
+  }
+
+  setRange = (dateRange) => {
+    this.setState({
+      dateRange,
+      loadingEvents: true
+    }, this.retrieveMeetups(this.state));
   }
 
   onMarkerClick = (event_id) => {
@@ -123,36 +111,38 @@ class App extends Component {
             <span>
               finally in map view!
             </span>
+            <div>
+              <button onClick={() => { this.setRange('today') }} >
+                Today
+              </button>
+              <button onClick={() => { this.setRange('week') }} >
+                Week
+              </button>
+              <button onClick={() => { this.setRange('month') }} >
+                Month
+              </button>
+            </div>
           </section>
-          {/*
-          <section>
-            <button onClick={() => { this.setRange('today') } } >
-              Today
-            </button>
-            <button onClick={() => { this.setRange('week') } } >
-              Week
-            </button>
-            <button onClick={() => { this.setRange('month') } } >
-              Month
-            </button>
-          </section>
-          */}
           <section className="events-container">
-            { (this.state.events.length > 0) ? 
-                (this.state.selectedEvent) ? 
-                  <Event key={this.state.selectedEvent.id} {...this.state.selectedEvent} />
-                : this.state.events.map(function(event) {
-                  return (
-                    <Event key={event.id} {...event} />
-                  );
-                })
-            : ''}
+            { (this.state.loadingEvents) ? 
+              <i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i> : 
+               (this.state.events.length > 0) ? 
+                  (this.state.selectedEvent) ? 
+                    <Event key={this.state.selectedEvent.id} {...this.state.selectedEvent} />
+                  : this.state.events.map(function(event) {
+                    return (
+                      <Event key={event.id} {...event} />
+                    );
+                  })
+              : ''
+            }
           </section>
         </aside>
-        <section class="map-wrapper">
+        <section className="map-wrapper">
           <MapContainer
             style={style}
             events={this.state.events}
+            selectedEvent={this.state.selectedEvent}
             city={this.state.city}
             onMarkerClick={this.onMarkerClick}
             onMapClick={this.onMapClick}

@@ -19,8 +19,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/meetups', (req, res) => {
-  console.log('query string:', qs.stringify(req.query));
-  const url = 'https://api.meetup.com/find/upcoming_events?photo-host=public&page=100&order=time&topic_category=292' + qs.stringify(req.query) + `&key=${process.env.MEETUP_API_KEY}&sign=true`;
+  console.log('query string:', req.query);
+  let url = `https://api.meetup.com/find/upcoming_events?photo-host=public&page=100&order=time&topic_category=292&key=${process.env.MEETUP_API_KEY}&sign=true`;
+  if(req.query) {
+    url = url + '&' + qs.stringify(req.query);
+  }
   var options = {
     url,
     headers: {
