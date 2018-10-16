@@ -1,6 +1,35 @@
 import React, { Component } from 'react';
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
 
+const renderMarkers = (events, selectedEvent, onMarkerClick) => {
+
+  if(events.length == 0) {
+    return;
+  }
+
+  if(selectedEvent) {
+    return (
+      <Marker
+        key={selectedEvent.id}
+        position={{ lat: selectedEvent.venue.lat, lng: selectedEvent.venue.lon }}
+        onClick={(e) => { onMarkerClick(selectedEvent.id) }}
+        title={selectedEvent.venue.name}
+      />
+    );
+  }
+
+  return events.filter(event => { return event.venue }).map((event) => {
+    return (
+      <Marker
+        key={event.id}
+        position={{ lat: event.venue.lat, lng: event.venue.lon }}
+        onClick={(e) => { onMarkerClick(event.id) }}
+        title={event.venue.name}
+      />
+    )
+  })
+};
+
 export const MapContainer = (props) => {
     let initialCenter = {
       lat: 47.620422,
@@ -13,25 +42,9 @@ export const MapContainer = (props) => {
     }
 
     return (
-      <Map google={props.google} zoom={10} onClick={props.onMapClick} initialCenter={initialCenter} mapCenter={initialCenter}>
-        { (props.events.length > 0) ? 
-            props.events.filter(event => { return event.venue }).map(function(event) {
-              let style = {};
-              if (event.id == props.selectedEvent.id) {
-                style.backgroundColor = 'blue';
-              }
 
-              return (
-                <Marker 
-                  key={event.id}
-                  style={style}
-                  position={{ lat: event.venue.lat, lng: event.venue.lon }} 
-                  onClick={(e) => { props.onMarkerClick(event.id) }}
-                  title={event.venue.name}
-                />
-              )
-            })
-          : ''}
+      <Map google={props.google} zoom={10} onClick={props.onMapClick} initialCenter={initialCenter} mapCenter={initialCenter}>
+        { renderMarkers(props.events, props.selectedEvent, props.onMarkerClick) }
       </Map>
     );
 }
