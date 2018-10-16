@@ -23,8 +23,8 @@ const Event = (props) => {
         : ''}
       {(props.venue) ?
         <p>
-          <a className="" href={`https://www.google.com/maps/search/?api=1&query=${props.venue.name}`} target="_blank">
-            <button>
+          <a className="button text-white" href={`https://www.google.com/maps/search/?api=1&query=${props.venue.name}`} target="_blank">
+            <button className="text-white">
               GET DIRECTIONS
             </button>
           </a>

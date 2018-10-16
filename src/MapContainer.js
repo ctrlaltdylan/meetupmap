@@ -43,7 +43,13 @@ export const MapContainer = (props) => {
 
     return (
 
-      <Map google={props.google} zoom={10} onClick={props.onMapClick} initialCenter={initialCenter} mapCenter={initialCenter}>
+      <Map 
+        google={props.google} 
+        zoom={10} 
+        onClick={props.onMapClick}
+        initialCenter={initialCenter}
+        mapCenter={initialCenter}
+        style={{ height: '100%', width: '100%' }}>
         { renderMarkers(props.events, props.selectedEvent, props.onMarkerClick) }
       </Map>
     );

@@ -5,7 +5,10 @@ import request from 'request';
 import qs from 'querystring';
 import LocationSearchInput from './LocationSearchInput';
 import Event from './Event';
+import MediaQuery from 'react-responsive';
 import moment from 'moment';
+import FiltersModal from './FiltersModal';
+import Filters from './Filters';
 
 const style = {
   width: '100%',
@@ -21,7 +24,8 @@ class App extends Component {
       city: {},
       events: [],
       selectedEvent: false,
-      dateRange: 'month'
+      dateRange: 'month',
+      showFilters: false
     }
 
   }
@@ -98,6 +102,16 @@ class App extends Component {
     })
   }
 
+  /**
+   * Change the state of the Filters modal when in mobile view
+   */
+  toggleFiltersModal = () => {
+    const filterState = !this.state.showFilters;
+    this.setState({
+      showFilters: filterState
+    })
+  }
+
   componentDidMount() {
     this.retrieveMeetups();
   }
@@ -105,40 +119,37 @@ class App extends Component {
   render() {
     return (
       <div className="container">
-        <aside>
-          <section className="heading">
-            <h2>Seattle Tech Meetups</h2>
-            <span>
-              finally in map view!
-            </span>
-            <div>
-              <button onClick={() => { this.setRange('today') }} >
-                Today
-              </button>
-              <button onClick={() => { this.setRange('week') }} >
-                Week
-              </button>
-              <button onClick={() => { this.setRange('month') }} >
-                Month
-              </button>
-            </div>
-          </section>
-          <section className="events-container">
-            { (this.state.loadingEvents) ? 
-              <i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i> : 
-               (this.state.events.length > 0) ? 
-                  (this.state.selectedEvent) ? 
-                    <Event key={this.state.selectedEvent.id} {...this.state.selectedEvent} />
-                  : this.state.events.map(function(event) {
-                    return (
-                      <Event key={event.id} {...event} />
-                    );
-                  })
-              : ''
-            }
-          </section>
-        </aside>
-        <section className="map-wrapper">
+        <section className="header">
+          <h2>Seattle Tech Meetups</h2>
+          <span>
+            finally in map view!
+          </span>
+        </section>
+        <section className="filters-container">
+          <MediaQuery query="(max-device-width: 1224px)">
+            <button className="button expanded" onClick={this.toggleFiltersModal}>
+              FILTERS
+            </button>
+          </MediaQuery>
+          <MediaQuery query="(min-device-width: 1224px)">
+            <Filters setRange={this.setRange} /> 
+          </MediaQuery>
+        </section>
+        <section className="events">
+          { (this.state.loadingEvents) ? 
+            <i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i> : 
+              (this.state.events.length > 0) ? 
+                (this.state.selectedEvent) ? 
+                  <Event key={this.state.selectedEvent.id} {...this.state.selectedEvent} />
+                : this.state.events.map(function(event) {
+                  return (
+                    <Event key={event.id} {...event} />
+                  );
+                })
+            : ''
+          }
+        </section>
+        <section className="map">
           <MapContainer
             style={style}
             events={this.state.events}
@@ -148,6 +159,9 @@ class App extends Component {
             onMapClick={this.onMapClick}
           />
         </section>
+        <FiltersModal show={this.state.showFilters} toggle={this.toggleFiltersModal}>
+          <Filters setRange={this.setRange} />
+        </FiltersModal>
       </div>
     );
   }
