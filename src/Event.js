@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 const Event = (props) => {
   return (
     <div className="event">
-      <a key={props.id} href={props.link} target="_blank">
+      <a key={props.id} onClick={ () => { props.onSelectedEvent(props.id) } }>
         <h3 className="event-title">
           {props.name}
         </h3>
@@ -21,6 +21,7 @@ const Event = (props) => {
           hosted at <a href={`https://www.google.com/maps/search/?api=1&query=${props.venue.name}`} target="_blank">{props.venue.name}</a>
         </p>
         : ''}
+        <div>
       {(props.venue) ?
         <p>
           <a className="button text-white" href={`https://www.google.com/maps/search/?api=1&query=${props.venue.name}`} target="_blank">
@@ -30,6 +31,10 @@ const Event = (props) => {
           </a>
         </p>
         : ''}
+        <a href={props.link} className="button text-white" target="_blank">
+          VIEW ON MEETUP
+        </a> 
+        </div>
 
     </div>
   )

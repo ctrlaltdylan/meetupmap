@@ -9,25 +9,32 @@ import MediaQuery from 'react-responsive';
 import moment from 'moment';
 import FiltersModal from './FiltersModal';
 import Filters from './Filters';
+import {
+  geocodeByAddress,
+  getLatLng,
+} from 'react-places-autocomplete';
 
 const style = {
   width: '100%',
   height: '100%'
 };
 
+const inital_state = {
+  loadingEvents: true,
+  city: {},
+  events: [],
+  selectedEvent: false,
+  dateRange: 'month',
+  showFilters: false,
+  searchAddress: '',
+  resettable: false
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      loadingEvents: true,
-      city: {},
-      events: [],
-      selectedEvent: false,
-      dateRange: 'month',
-      showFilters: false
-    }
-
+    this.state = inital_state
   }
 
   retrieveMeetups = (state) => {
@@ -68,6 +75,32 @@ class App extends Component {
     }.bind(this));
   }
 
+  // from the react-autocomplete-jawn
+  onLocationChange = (searchAddress) => {
+    this.setState({ searchAddress });
+  };
+
+  // from the react-autocomplete-jawn
+  onLocationSelect = (address) => {
+    geocodeByAddress(address)
+      .then((results) => getLatLng(results[0]))
+      .then((latLng) => console.log('Success', latLng))
+      .then((latLng) => {
+        // this.onLocationSelect(latLng)
+        debugger;
+        const {lat, lng} = latLng;
+        this.setState({
+          lat,
+          lng,
+          loadingEvents: true
+        }, () => {
+          this.retrieveMeetups(this.state);
+        })
+      })
+      .catch(error => console.error('Error', error));
+  };
+
+
   onLocationSelect = (latLng) => {
     const {lat, lng} = latLng;
     this.setState({
@@ -102,6 +135,20 @@ class App extends Component {
     })
   }
 
+  resetFilters = () => {
+    this.setState(inital_state, this.retrieveMeetups);
+  }
+
+  componentWillUpdate = (nextProps, nextState) => {
+    if(nextState.resettable) {
+      return;
+    }
+    
+    if(nextState.selectedEvent) {
+      this.setState({ resettable: true });
+    }
+  }
+
   /**
    * Change the state of the Filters modal when in mobile view
    */
@@ -132,7 +179,14 @@ class App extends Component {
             </button>
           </MediaQuery>
           <MediaQuery query="(min-device-width: 1224px)">
-            <Filters setRange={this.setRange} /> 
+            <Filters 
+              setRange={this.setRange} 
+              searchAddress={this.state.searchAddress}
+              onLocationSelect={this.onLocationSelect}
+              onLocationChange={this.onLocationChange}
+              resettable={this.state.resettable}
+              resetFilters={this.resetFilters}
+            /> 
           </MediaQuery>
         </section>
         <section className="events">
@@ -141,9 +195,9 @@ class App extends Component {
               (this.state.events.length > 0) ? 
                 (this.state.selectedEvent) ? 
                   <Event key={this.state.selectedEvent.id} {...this.state.selectedEvent} />
-                : this.state.events.map(function(event) {
+                : this.state.events.map((event) => {
                   return (
-                    <Event key={event.id} {...event} />
+                    <Event key={event.id} onSelectedEvent={this.onMarkerClick} {...event} />
                   );
                 })
             : ''
@@ -160,7 +214,14 @@ class App extends Component {
           />
         </section>
         <FiltersModal show={this.state.showFilters} toggle={this.toggleFiltersModal}>
-          <Filters setRange={this.setRange} />
+          <Filters 
+            setRange={this.setRange}
+            searchAddress={this.state.searchAddress}
+            onLocationSelect={this.onLocationSelect}
+            onLocationChange={this.onLocationChange}
+            resettable={this.state.resettable}
+            resetFilters={this.resetFilters}
+          />
         </FiltersModal>
       </div>
     );
